@@ -42,22 +42,33 @@ struct linkedList {
     void sort();
     bool has_palindromes();
     void delete_primal();
+    void double_elements();
+    ~linkedList();
 };
 
 
 int main() {
     linkedList list;
-    list.add(111);
-    list.add(231);
-    list.add(331);
-    list.add(423);
-    list.add(5123);
-    list.add(6213);
-    if(!list.has_palindromes()) {
+    /*list.add(17);
+    list.add(1);
+    list.add(13);
+    list.add(12);
+    list.add(11);
+    list.add(15);*/
+
+    unsigned int n;
+    std::cin >> n;
+    for(int i = 0; i < n; i++) {
+        unsigned int value;
+        std::cin >> value;
+        list.add(value);
+    }
+    if(not list.has_palindromes()) {
         list.sort();
     }
     else {
-        std::cout << "no";
+        list.delete_primal();
+        list.double_elements();
     }
     list.print();
     return 0;
@@ -125,20 +136,45 @@ void linkedList::delete_primal() {
     if(is_empty())
         return;
     node* current = first;
+    node* previous = nullptr;
+
     while (current != nullptr) {
         if(is_primal(current->value)) {
-            if(current->next != nullptr) {
-                current->next;
+            if(previous == nullptr) {
+                first = current->next;
+                delete current;
+                current = first;
+            }
+            else {
+                previous->next = current->next;
+                delete current;
+                current = previous->next;
             }
         }
-        current = current->next;
+        else {
+            previous = current;
+            current = current->next;
+        }
     }
-    std::cout << std::endl;
 }
 
-linkedList::linkedList() {
+void linkedList::double_elements() {
+    if(is_empty())
+        return;
+    node* current = first;
+    while (current != nullptr) {
+        node* newNode = new node{current->value, current->next};
+        current->next = newNode;
+        current = newNode->next;
+    }
+}
+
+linkedList::~linkedList() {
     node* current = first;
     node* nextNode = current->next;
-    delete current;
-    current = nextNode;
+    while (current != nullptr) {
+        node* nextNode = current->next;
+        delete current;
+        current = nextNode;
+    }
 }
